@@ -157,11 +157,25 @@ async function inspectLivePage(url, requiredTestIds) {
 
   const found = requiredTestIds.filter((id) => result.text.includes(id));
   const missing = requiredTestIds.filter((id) => !found.includes(id));
+
+  // Extract name if test-user-name is present (specifically for Task 1B)
+  let extractedName = null;
+  if (found.includes('test-user-name')) {
+    // Basic regex to find text content inside an element with data-testid="test-user-name"
+    // Handles both <element data-testid="test-user-name">Name</element> 
+    // and <element data-testid='test-user-name'>Name</element>
+    const nameMatch = result.text.match(/data-testid=["']test-user-name["'][^>]*>([^<]+)</i);
+    if (nameMatch && nameMatch[1]) {
+      extractedName = nameMatch[1].trim();
+    }
+  }
+
   return {
     success: missing.length === 0,
     status: result.status,
     found,
     missing,
+    extractedName,
     message: missing.length === 0 ? 'All required test IDs found in live HTML.' : `${missing.length} required test IDs missing.`
   };
 }

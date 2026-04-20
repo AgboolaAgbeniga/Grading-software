@@ -216,3 +216,24 @@ pre {
 .capturing body {
   background: white;
 }
+
+.report-branding {
+  text-align: center;
+  border-bottom: 2px solid #6366f1;
+  margin-bottom: 20px;
+  padding-bottom: 10px;
+}
+
+.report-branding h3 {
+  margin: 0;
+  color: #4338ca;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 1.2rem;
+}
+
+.report-branding p {
+  margin: 4px 0 0;
+  font-weight: 500;
+  color: #6366f1;
+}

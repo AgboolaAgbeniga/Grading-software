@@ -9,6 +9,8 @@ The **Intern Task Grading Platform** automates the tedious process of verifying 
 ## ✨ Key Features
 
 - **Multi-Task Support**: Evaluate multiple tasks simultaneously (currently supporting Task 1A and Task 1B).
+- **Intern Name Extraction**: Automatically extracts the intern's name from their Task 1B profile page or GitHub metadata for personalized reporting.
+- **HNG Branding**: Professional report design featuring HNG Internship & Frontend Track branding.
 - **Live Site Inspection**: Verifies that the deployed application is reachable and contains all necessary interactive elements.
 - **GitHub Repository Analysis**: 
   - Scans source code recursively to find required test IDs across HTML, JS, TS, and CSS files.

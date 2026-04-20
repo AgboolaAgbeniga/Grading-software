@@ -96,9 +96,14 @@ form.addEventListener('submit', async (event) => {
       })
     });
     const report = await response.json();
+    const internName = report.task1b.live.extractedName || report.task1a.repo.repoInfo?.owner || 'Unknown Intern';
 
     resultContainer.innerHTML = `
-      <h2>Grading Report</h2>
+      <div class="report-branding">
+        <h3>HNG Internship</h3>
+        <p>Frontend Track - Task Evaluation Report</p>
+      </div>
+      <h2>Grading Report: ${internName}</h2>
       <p class="small-text">Generated at: ${new Date(report.generatedAt).toLocaleString()}</p>
       ${renderStatusSummary('Task 1A', report.task1a)}
       ${renderStatusSummary('Task 1B', report.task1b)}

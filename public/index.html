@@ -30,33 +30,142 @@
       <p>Automated Grading Engine & Report Generator</p>
     </header>
 
-    <form id="report-form">
+    <div class="tabs">
+      <button class="tab-btn active" data-tab="single">Single Intern</button>
+      <button class="tab-btn" data-tab="bulk">Mass Grading (CSV)</button>
+      <button class="tab-btn" data-tab="info">Grading System</button>
+    </div>
+
+    <div id="single-tab" class="tab-content">
+      <form id="report-form">
+        <section class="task-card">
+          <h2>Task 1A</h2>
+          <label>
+            Live URL
+            <input type="url" id="task1a-live" name="task1aLive" placeholder="https://example.com" required />
+          </label>
+          <label>
+            GitHub repo URL
+            <input type="url" id="task1a-repo" name="task1aRepo" placeholder="https://github.com/user/repo" required />
+          </label>
+        </section>
+
+        <section class="task-card">
+          <h2>Task 1B</h2>
+          <label>
+            Live URL
+            <input type="url" id="task1b-live" name="task1bLive" placeholder="https://example.com" required />
+          </label>
+          <label>
+            GitHub repo URL
+            <input type="url" id="task1b-repo" name="task1bRepo" placeholder="https://github.com/user/repo" required />
+          </label>
+        </section>
+
+        <button type="submit">Generate Report</button>
+      </form>
+    </div>
+
+    <div id="bulk-tab" class="tab-content hidden">
       <section class="task-card">
-        <h2>Task 1A</h2>
-        <label>
-          Live URL
-          <input type="url" id="task1a-live" name="task1aLive" placeholder="https://example.com" required />
-        </label>
-        <label>
-          GitHub repo URL
-          <input type="url" id="task1a-repo" name="task1aRepo" placeholder="https://github.com/user/repo" required />
-        </label>
+        <h2>Bulk Upload</h2>
+        <p class="small-text">Upload a CSV/TSV with columns: <strong>Timestamp, Slack ID (Abdul.tsx), Slack Email, Stage 1a Live URL, Stage 1a Github Repo, Stage 1b Live URL, Stage 1b Github Repo</strong></p>
+        <div class="upload-area" id="drop-zone">
+          <input type="file" id="csv-upload" accept=".csv,.tsv,.txt" hidden />
+          <label for="csv-upload" class="upload-label">
+            <span class="upload-icon">📁</span>
+            <span>Click to upload or drag & drop CSV</span>
+          </label>
+        </div>
+        <div id="bulk-controls" class="hidden">
+          <p id="file-info"></p>
+          <button id="start-mass-grading" class="btn-primary">Start Mass Grading</button>
+        </div>
       </section>
 
-      <section class="task-card">
-        <h2>Task 1B</h2>
-        <label>
-          Live URL
-          <input type="url" id="task1b-live" name="task1bLive" placeholder="https://example.com" required />
-        </label>
-        <label>
-          GitHub repo URL
-          <input type="url" id="task1b-repo" name="task1bRepo" placeholder="https://github.com/user/repo" required />
-        </label>
-      </section>
+      <section id="bulk-result" class="result hidden">
+        <div class="bulk-stats-grid">
+          <div class="stat-card">
+            <span class="stat-value" id="stat-total">0</span>
+            <span class="stat-label">Total</span>
+          </div>
+          <div class="stat-card pass">
+            <span class="stat-value" id="stat-pass">0</span>
+            <span class="stat-label">Passed</span>
+          </div>
+          <div class="stat-card fail">
+            <span class="stat-value" id="stat-fail">0</span>
+            <span class="stat-label">Failed</span>
+          </div>
+        </div>
 
-      <button type="submit">Generate Report</button>
-    </form>
+        <div class="filter-tabs">
+          <button class="filter-btn active" data-filter="all">All Records</button>
+          <button class="filter-btn" data-filter="pass">Passed</button>
+          <button class="filter-btn" data-filter="review">Review</button>
+          <button class="filter-btn" data-filter="fail">Error/Fail</button>
+        </div>
+
+        <div class="table-wrapper">
+          <table id="mass-grading-table">
+            <thead>
+              <tr>
+                <th>Intern</th>
+                <th>1A Score</th>
+                <th>1B Score</th>
+                <th>Average</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+        <div class="actions">
+          <button id="download-bulk-csv" class="btn-secondary">Download Results CSV</button>
+        </div>
+      </section>
+    </div>
+
+    <div id="info-tab" class="tab-content hidden">
+      <section class="task-card info-section">
+        <h2>Grading Methodology</h2>
+        <p>The HNG Grading Engine uses a <strong>deterministic verification system</strong>. We don't just check if a site is "online"; we perform a deep structural audit of both the deployed DOM and the underlying source code.</p>
+        
+        <h3>1. The 10-Point Scale</h3>
+        <p>Each task (1A and 1B) is assigned a raw score out of 10. This is calculated based on the percentage of mandatory technical identifiers (<code>data-testid</code>) discovered by our crawlers:
+        <br><code>(Unique IDs Found / Total Required IDs) × 10</code></p>
+
+        <h3>2. Task Breakdown</h3>
+        <div class="info-grid">
+          <div class="info-card">
+            <h4>Task 1A: Todo App (12 IDs)</h4>
+            <p>Focuses on state management and CRUD interactivity. We check for form structures, input bindings, priority indicators, and overdue logic.</p>
+          </div>
+          <div class="info-card">
+            <h4>Task 1B: Profile Card (8 IDs)</h4>
+            <p>Focuses on UI components and dynamic data rendering. We verify user identity elements, UTC time displays, and social link structures.</p>
+          </div>
+        </div>
+
+        <h3>3. Dual-Channel Verification</h3>
+        <p>To ensure academic integrity, we verify identifiers through two channels:</p>
+        <ul>
+          <li><strong>Live Scan:</strong> Our engine parses the rendered HTML on the deployed URL to ensure attributes exist in the final build.</li>
+          <li><strong>Repo Audit:</strong> We recursively scan the GitHub repository's tree (HTML, JSX, TSX, JS, CSS) to verify the source code contains the required tags.</li>
+        </ul>
+
+        <h3>4. Integrity & Anti-Cheat</h3>
+        <p>To maintain high standards, we enforce strict accessibility rules:</p>
+        <ul>
+          <li><strong>Broken Links:</strong> Any live URL that does not return a <code>200 OK</code> status is automatically flagged as a <strong>FAIL</strong>.</li>
+          <li><strong>Inaccessible Repos:</strong> Private repositories or 404 links that prevent source code audit are flagged as <strong>FAIL</strong>.</li>
+          <li><strong>Requirement:</strong> Valid links are a prerequisite for scoring. An intern cannot pass if their work cannot be audited by the engine.</li>
+        </ul>
+
+        <h3>5. Pass Criteria</h3>
+        <p>The final result is based on the <strong>Average Score</strong> of both tasks. An average of <strong>7.0 or higher</strong> is required for a <strong>PASS</strong> status. Anything below triggers a <strong>REVIEW</strong> status, requiring manual intervention or improvement by the intern.</p>
+      </section>
+    </div>
 
     <section id="result" class="result hidden" aria-live="polite"></section>
 
@@ -68,6 +177,7 @@
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.2/papaparse.min.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -65,10 +65,18 @@ function parseGitHubRepo(sourceUrl) {
 }
 
 async function fetchGitHubJson(url) {
+  const headers = {
+    'Accept': 'application/vnd.github.v3+json',
+    'User-Agent': 'grading-platform'
+  };
+
+  // Add GitHub Token if available in environment variables to avoid rate limiting
+  if (process.env.GITHUB_TOKEN) {
+    headers['Authorization'] = `token ${process.env.GITHUB_TOKEN}`;
+  }
+
   try {
-    const response = await fetch(url, {
-      headers: { 'Accept': 'application/vnd.github.v3+json', 'User-Agent': 'grading-platform' }
-    });
+    const response = await fetch(url, { headers });
     const body = await response.json();
     return { ok: response.ok, status: response.status, body };
   } catch (error) {

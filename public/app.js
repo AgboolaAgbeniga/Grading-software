@@ -142,8 +142,8 @@ form.addEventListener('submit', async (event) => {
       </div>
       <h2>Grading Report: ${internName}</h2>
       <p class="small-text">Generated at: ${new Date(report.generatedAt).toLocaleString()}</p>
-      ${renderStatusSummary('Task 1A', report.task1a)}
-      ${renderStatusSummary('Task 1B', report.task1b)}
+      ${renderStatusSummary('Task 1A (Todo Application)', report.task1a)}
+      ${renderStatusSummary('Task 1B (Profile Card)', report.task1b)}
       <details><summary>Raw JSON report</summary><pre>${JSON.stringify(report, null, 2)}</pre></details>
     `;
     actionsContainer.classList.remove('hidden');

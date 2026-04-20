@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Intern Task Grading Platform</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="container">
+    <header>
+      <h1>Intern Task Grading Platform</h1>
+      <p>Paste the live URL and GitHub repo for Task 1A and Task 1B to generate a report.</p>
+    </header>
+
+    <form id="report-form">
+      <section class="task-card">
+        <h2>Task 1A</h2>
+        <label>
+          Live URL
+          <input type="url" id="task1a-live" name="task1aLive" placeholder="https://example.com" required />
+        </label>
+        <label>
+          GitHub repo URL
+          <input type="url" id="task1a-repo" name="task1aRepo" placeholder="https://github.com/user/repo" required />
+        </label>
+      </section>
+
+      <section class="task-card">
+        <h2>Task 1B</h2>
+        <label>
+          Live URL
+          <input type="url" id="task1b-live" name="task1bLive" placeholder="https://example.com" required />
+        </label>
+        <label>
+          GitHub repo URL
+          <input type="url" id="task1b-repo" name="task1bRepo" placeholder="https://github.com/user/repo" required />
+        </label>
+      </section>
+
+      <button type="submit">Generate Report</button>
+    </form>
+
+    <section id="result" class="result hidden" aria-live="polite"></section>
+
+    <section id="actions" class="actions hidden">
+      <button id="download-pdf" class="btn-secondary">Download PDF Report</button>
+      <button id="download-jpeg" class="btn-secondary">Download JPEG Image</button>
+    </section>
+  </main>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

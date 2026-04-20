@@ -1,0 +1,218 @@
+:root {
+  color-scheme: dark;
+  color: #111;
+  background: #f5f7fb;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: linear-gradient(180deg, #eef2ff 0%, #f8fafc 100%);
+}
+
+.container {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+header {
+  margin-bottom: 24px;
+}
+
+h1 {
+  margin: 0 0 8px;
+  font-size: clamp(2rem, 3vw, 3rem);
+}
+
+p {
+  margin: 0;
+  color: #4b5563;
+}
+
+.task-card {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 18px;
+  padding: 20px;
+  margin-bottom: 18px;
+  box-shadow: 0 18px 30px rgba(15, 23, 42, 0.05);
+}
+
+.task-card h2 {
+  margin-top: 0;
+  color: #111827;
+}
+
+label {
+  display: block;
+  margin-bottom: 14px;
+  color: #374151;
+  font-weight: 600;
+}
+
+input[type='url'] {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  font-size: 1rem;
+  margin-top: 8px;
+}
+
+button {
+  background: #4338ca;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 14px 20px;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+button:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.result {
+  background: #ffffff;
+  border: 1px solid #d1d5db;
+  border-radius: 18px;
+  padding: 20px;
+  margin-top: 18px;
+}
+
+.hidden {
+  display: none;
+}
+
+.report-card {
+  border-top: 1px solid #e5e7eb;
+  padding-top: 16px;
+  margin-top: 16px;
+}
+
+.report-card:first-of-type {
+  border-top: none;
+  margin-top: 0;
+  padding-top: 0;
+}
+
+.report-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.report-grid {
+  display: grid;
+  gap: 16px;
+  margin-top: 14px;
+}
+
+@media (min-width: 860px) {
+  .report-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.report-section {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.small-text {
+  display: block;
+  color: #4b5563;
+  font-size: 0.92rem;
+  margin-top: 6px;
+}
+
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.status.fail {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.status.pass {
+  background: #dcfce7;
+  color: #166534;
+}
+
+ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+li {
+  margin-bottom: 8px;
+}
+
+pre {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 16px;
+  overflow-x: auto;
+}
+
+@media (min-width: 720px) {
+  .task-card {
+    display: grid;
+    gap: 18px;
+  }
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-top: 18px;
+  justify-content: flex-end;
+}
+
+.btn-secondary {
+  background: #6366f1;
+  font-size: 0.875rem;
+  padding: 10px 16px;
+}
+
+.btn-secondary:hover {
+  background: #4f46e5;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+/* Ensure buttons and other elements are hidden during export */
+.capturing .actions,
+.capturing form,
+.capturing header,
+.capturing details summary::before {
+  display: none !important;
+}
+
+.capturing .container {
+  padding: 40px;
+  max-width: 1200px;
+}
+
+.capturing body {
+  background: white;
+}

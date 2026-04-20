@@ -121,10 +121,24 @@ form.addEventListener('submit', async (event) => {
     });
     const internName = report.task1b.live.extractedName || report.task1a.repo.repoInfo?.owner || 'Unknown Intern';
 
+    // Calculate scores
+    const uniqueIds1A = new Set([...report.task1a.live.found, ...(report.task1a.repo.sourceAnalysis?.found || [])]);
+    const score1A = (uniqueIds1A.size / MAX_IDS_1A) * 10;
+
+    const uniqueIds1B = new Set([...report.task1b.live.found, ...(report.task1b.repo.sourceAnalysis?.found || [])]);
+    const score1B = (uniqueIds1B.size / MAX_IDS_1B) * 10;
+
+    const avgScore = (score1A + score1B) / 2;
+
     resultContainer.innerHTML = `
       <div class="report-branding">
         <h3>HNG Internship</h3>
         <p>Frontend Track - Task Evaluation Report</p>
+        <div class="score-summary">
+           <div class="score-item"><span>1A Score:</span> <strong>${score1A.toFixed(1)}</strong></div>
+           <div class="score-item"><span>1B Score:</span> <strong>${score1B.toFixed(1)}</strong></div>
+           <div class="score-item highlighted"><span>Average:</span> <strong>${avgScore.toFixed(1)}</strong></div>
+        </div>
       </div>
       <h2>Grading Report: ${internName}</h2>
       <p class="small-text">Generated at: ${new Date(report.generatedAt).toLocaleString()}</p>
@@ -320,6 +334,10 @@ startBulkBtn.addEventListener('click', async () => {
         bulkResults.push({
           "Slack Display Name": row['Slack ID (Abdul.tsx)'],
           "Slack Email": row['Slack Email'],
+          "1a score": "0.0",
+          "1b score": "0.0",
+          "Average Score": "0.0",
+          "Total Score": "0.0",
           "Passed": 'ERROR',
           "Comment": `System Error: ${err.message}`
         });

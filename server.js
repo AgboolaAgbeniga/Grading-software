@@ -8,6 +8,17 @@ app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 
 const TASK1A_TESTIDS = [
+  'test-todo-card',
+  'test-todo-title',
+  'test-todo-description',
+  'test-todo-due-date',
+  'test-todo-time-remaining',
+  'test-todo-status',
+  'test-todo-status-control',
+  'test-todo-priority-indicator',
+  'test-todo-tags',
+  'test-todo-edit-button',
+  'test-todo-delete-button',
   'test-todo-edit-form',
   'test-todo-edit-title-input',
   'test-todo-edit-description-input',
@@ -15,8 +26,6 @@ const TASK1A_TESTIDS = [
   'test-todo-edit-due-date-input',
   'test-todo-save-button',
   'test-todo-cancel-button',
-  'test-todo-status-control',
-  'test-todo-priority-indicator',
   'test-todo-expand-toggle',
   'test-todo-collapsible-section',
   'test-todo-overdue-indicator'
@@ -155,36 +164,121 @@ async function analyzeRepoSources(owner, repo, branch, requiredTestIds) {
 async function inspectLivePage(url, requiredTestIds) {
   const normalized = normalizeUrl(url);
   if (!normalized) {
-    return { success: false, message: 'Invalid live URL', found: [] };
+    return { success: false, message: 'Invalid live URL', found: [], missing: [...requiredTestIds], status: null, extractedName: null };
   }
 
   const result = await fetchHtml(normalized);
   if (!result.ok) {
-    return { success: false, message: `Live site unreachable (status ${result.status})`, found: [] };
+    return { success: false, message: `Live site unreachable (status ${result.status})`, found: [], missing: [...requiredTestIds], status: result.status, extractedName: null };
   }
 
   const found = requiredTestIds.filter((id) => result.text.includes(id));
   const missing = requiredTestIds.filter((id) => !found.includes(id));
 
+  // Technical Audit for Task 1B
+  const technicalAudit = {
+    semanticHtml: true,
+    timeValid: true,
+    accessibility: true,
+    errors: []
+  };
+
   // Extract name if test-user-name is present (specifically for Task 1B)
   let extractedName = null;
   if (found.includes('test-user-name')) {
-    // Basic regex to find text content inside an element with data-testid="test-user-name"
-    // Handles both <element data-testid="test-user-name">Name</element> 
-    // and <element data-testid='test-user-name'>Name</element>
     const nameMatch = result.text.match(/data-testid=["']test-user-name["'][^>]*>([^<]+)</i);
     if (nameMatch && nameMatch[1]) {
       extractedName = nameMatch[1].trim();
     }
   }
 
+  // Task 1A specific validation
+  if (requiredTestIds.includes('test-todo-card')) {
+    // Accessibility: Expand toggle must use aria-expanded and aria-controls
+    if (found.includes('test-todo-expand-toggle')) {
+      const toggleMatch = result.text.match(/data-testid=["']test-todo-expand-toggle["'][^>]*aria-expanded=/i);
+      const controlsMatch = result.text.match(/data-testid=["']test-todo-expand-toggle["'][^>]*aria-controls=/i);
+      if (!toggleMatch || !controlsMatch) {
+         technicalAudit.accessibility = false;
+         technicalAudit.errors.push('Expand toggle must use aria-expanded and aria-controls.');
+      }
+    }
+    // Accessibility: Time/Overdue updates should use aria-live
+    if (found.includes('test-todo-time-remaining') || found.includes('test-todo-overdue-indicator')) {
+      if (!result.text.match(/aria-live=["']polite["']/i)) {
+        technicalAudit.accessibility = false;
+        technicalAudit.errors.push('Dynamic time updates should use aria-live="polite".');
+      }
+    }
+  }
+
+  // Task 1B specific validation
+  if (requiredTestIds.includes('test-profile-card')) {
+    // Check if test-user-time is a valid epoch timestamp in ms (e.g. 13 digits)
+    if (found.includes('test-user-time')) {
+      const timeMatch = result.text.match(/data-testid=["']test-user-time["'][^>]*>([^<]+)</i);
+      if (timeMatch && timeMatch[1]) {
+        const valStr = timeMatch[1].trim();
+        const val = parseInt(valStr);
+        const now = Date.now();
+        const isMs = valStr.length >= 13;
+        if (isNaN(val) || Math.abs(now - val) > 3600000 || !isMs) {
+          technicalAudit.timeValid = false;
+          technicalAudit.errors.push('test-user-time must be a valid epoch timestamp in milliseconds.');
+        }
+      }
+    }
+
+    // Check for article / header / figure / nav semantics
+    if (found.includes('test-profile-card') && !result.text.match(/<article[^>]*data-testid=["']test-profile-card["']/i)) {
+      technicalAudit.semanticHtml = false;
+      technicalAudit.errors.push('Task 1B requires semantic <article> for the card.');
+    }
+    if (!result.text.match(/<(header|h2)[^>]*data-testid=["']test-user-name["']/i)) {
+      technicalAudit.semanticHtml = false;
+      technicalAudit.errors.push('Name element should be inside <header> or <h2>.');
+    }
+    if (found.includes('test-user-social-links') && !result.text.match(/<(nav|ul)[^>]*data-testid=["']test-user-social-links["']/i)) {
+      technicalAudit.semanticHtml = false;
+      technicalAudit.errors.push('Social links should be inside <nav> or <ul>.');
+    }
+
+    // Check social link attributes
+    if (found.includes('test-user-social-links')) {
+      // Basic check for target="_blank" and rel
+      const linksText = result.text.split('test-user-social-links')[1]?.split('</')[0] || '';
+      if (linksText.includes('<a') && (!linksText.includes('target="_blank"') || !linksText.includes('rel="noopener'))) {
+         technicalAudit.accessibility = false;
+         technicalAudit.errors.push('Social links must have target="_blank" and rel="noopener noreferrer".');
+      }
+    }
+
+    // Check list structure for hobbies/dislikes
+    if ((found.includes('test-user-hobbies') || found.includes('test-user-dislikes')) && !result.text.includes('<li>')) {
+       technicalAudit.semanticHtml = false;
+       technicalAudit.errors.push('Hobbies and Dislikes must be presented as a list (<ul>/<li>).');
+    }
+
+    // Check for alt text on avatar
+    if (found.includes('test-user-avatar')) {
+      const avatarMatch = result.text.match(/<img[^>]*data-testid=["']test-user-avatar["'][^>]*alt=["']([^"']+)["']/i);
+      if (!avatarMatch || !avatarMatch[1] || ['image', 'avatar', 'photo', 'img'].includes(avatarMatch[1].toLowerCase().trim())) {
+        technicalAudit.accessibility = false;
+        technicalAudit.errors.push('Avatar image missing meaningful alt text (avoid "image", "photo", etc).');
+      }
+    }
+  }
+
   return {
-    success: missing.length === 0,
+    success: missing.length === 0 && technicalAudit.errors.length === 0,
     status: result.status,
     found,
     missing,
     extractedName,
-    message: missing.length === 0 ? 'All required test IDs found in live HTML.' : `${missing.length} required test IDs missing.`
+    technicalAudit,
+    message: missing.length === 0 && technicalAudit.errors.length === 0 
+      ? 'All requirements and technical audits passed.' 
+      : `${missing.length} IDs missing or technical requirements failed.`
   };
 }
 

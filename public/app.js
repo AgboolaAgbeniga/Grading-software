@@ -1,6 +1,7 @@
-// Constants for scoring
-const MAX_IDS_1A = 12;
+// Constants for scoring (Definitive Checklist: 21 IDs)
+const MAX_IDS_1A = 21;
 const MAX_IDS_1B = 8;
+const MIN_TASK_SCORE = 4.0; // Per-task minimum to pass
 
 const form = document.getElementById('report-form');
 const resultContainer = document.getElementById('result');
@@ -31,6 +32,17 @@ async function gradeIntern(data) {
   });
   if (!response.ok) throw new Error(`Server returned ${response.status}`);
   return await response.json();
+}
+
+function calcWeightedScore(taskReport, totalIds) {
+  const liveCount = taskReport.live.found?.length || 0;
+  const repoCount = taskReport.repo.sourceAnalysis?.found?.length || 0;
+  
+  const liveScore = (liveCount / totalIds) * 10;
+  const repoScore = (repoCount / totalIds) * 10;
+  
+  // Weights: 70% Live Site, 30% Source Code
+  return (liveScore * 0.7) + (repoScore * 0.3);
 }
 
 function renderList(title, items) {
@@ -95,6 +107,7 @@ function renderStatusSummary(title, report) {
       <div class="report-grid">
         ${renderList('Missing live IDs', report.live.missing)}
         ${renderList('Missing repository IDs', analysis.missing)}
+        ${renderList('Technical Audit Issues', report.live.technicalAudit?.errors)}
       </div>
       ${renderFoundById(analysis.foundById)}
       ${report.repo.repoInfo?.readmeText ? `<details class="report-section"><summary>README preview</summary><pre>${report.repo.repoInfo.readmeText.slice(0, 600).replace(/</g, '&lt;')}</pre></details>` : ''}
@@ -121,13 +134,9 @@ form.addEventListener('submit', async (event) => {
     });
     const internName = report.task1b.live.extractedName || report.task1a.repo.repoInfo?.owner || 'Unknown Intern';
 
-    // Calculate scores
-    const uniqueIds1A = new Set([...report.task1a.live.found, ...(report.task1a.repo.sourceAnalysis?.found || [])]);
-    const score1A = (uniqueIds1A.size / MAX_IDS_1A) * 10;
-
-    const uniqueIds1B = new Set([...report.task1b.live.found, ...(report.task1b.repo.sourceAnalysis?.found || [])]);
-    const score1B = (uniqueIds1B.size / MAX_IDS_1B) * 10;
-
+    // Calculate scores — live site weighted 70%, repo 30%
+    const score1A = calcWeightedScore(report.task1a, MAX_IDS_1A);
+    const score1B = calcWeightedScore(report.task1b, MAX_IDS_1B);
     const avgScore = (score1A + score1B) / 2;
 
     resultContainer.innerHTML = `
@@ -289,18 +298,15 @@ startBulkBtn.addEventListener('click', async () => {
           !task1bRepoOK ? `1B Repo Inaccessible (${report.task1b.repo.message || 'Private/Missing'})` : ''
         ].filter(Boolean);
 
-        // Calculate scores
-        const uniqueIds1A = new Set([...report.task1a.live.found, ...(report.task1a.repo.sourceAnalysis?.found || [])]);
-        const score1A = (uniqueIds1A.size / MAX_IDS_1A) * 10;
-
-        const uniqueIds1B = new Set([...report.task1b.live.found, ...(report.task1b.repo.sourceAnalysis?.found || [])]);
-        const score1B = (uniqueIds1B.size / MAX_IDS_1B) * 10;
+        // Calculate scores — live site weighted 70%, repo 30%
+        const score1A = calcWeightedScore(report.task1a, MAX_IDS_1A);
+        const score1B = calcWeightedScore(report.task1b, MAX_IDS_1B);
 
         const totalScore = score1A + score1B;
         const avgScore = totalScore / 2;
         
-        // Strict Passing: Must have valid links AND score >= 7
-        const passed = integrityIssues.length === 0 && avgScore >= 7;
+        // Strict Passing: valid links + avg >= 7 + each task >= 4.0
+        const passed = integrityIssues.length === 0 && avgScore >= 7 && score1A >= MIN_TASK_SCORE && score1B >= MIN_TASK_SCORE;
 
         rowEl.querySelector('.task1a-score').textContent = score1A.toFixed(1);
         rowEl.querySelector('.task1b-score').textContent = score1B.toFixed(1);
@@ -313,8 +319,10 @@ startBulkBtn.addEventListener('click', async () => {
 
         const comment = [
           ...integrityIssues.map(issue => `🚨 ${issue}`),
-          report.task1a.live.missing.length ? `1A Missing IDs: ${report.task1a.live.missing.join(',')}` : '',
-          report.task1b.live.missing.length ? `1B Missing IDs: ${report.task1b.live.missing.join(',')}` : ''
+          report.task1a.live.missing?.length ? `1A Missing IDs: ${report.task1a.live.missing.join(',')}` : '',
+          report.task1b.live.missing?.length ? `1B Missing IDs: ${report.task1b.live.missing.join(',')}` : '',
+          score1A < MIN_TASK_SCORE ? `⚠️ 1A below minimum (${score1A.toFixed(1)} < ${MIN_TASK_SCORE})` : '',
+          score1B < MIN_TASK_SCORE ? `⚠️ 1B below minimum (${score1B.toFixed(1)} < ${MIN_TASK_SCORE})` : ''
         ].filter(Boolean).join(' | ');
 
         bulkResults.push({

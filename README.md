@@ -18,36 +18,21 @@ The **Intern Task Grading Platform** automates the process of verifying intern t
 
 Each task is graded out of **10 points** based on the coverage of required technical identifiers (`data-testid`).
 
-### Task 1A: Todo Application (12 IDs)
-The engine checks for the following interactive and structural elements:
-- `test-todo-edit-form`: The container for the edit form.
-- `test-todo-edit-title-input`: Title field in the edit form.
-- `test-todo-edit-description-input`: Description field.
-- `test-todo-edit-priority-select`: Priority dropdown.
-- `test-todo-edit-due-date-input`: Date picker.
-- `test-todo-save-button`: Save action button.
-- `test-todo-cancel-button`: Cancel action button.
-- `test-todo-status-control`: Complete/Internal status toggle.
-- `test-todo-priority-indicator`: Visual indicator for task priority.
-- `test-todo-expand-toggle`: Button to expand/collapse task details.
-- `test-todo-collapsible-section`: The actual collapsible content.
-- `test-todo-overdue-indicator`: UI element shown when a task is past its due date.
+### Task 1A: Todo Application (21 IDs)
+The engine checks for the following 21 mandatory testids:
+`test-todo-card`, `test-todo-title`, `test-todo-description`, `test-todo-due-date`, `test-todo-time-remaining`, `test-todo-status`, `test-todo-status-control`, `test-todo-priority-indicator`, `test-todo-tags`, `test-todo-edit-button`, `test-todo-delete-button`, `test-todo-edit-form`, `test-todo-edit-title-input`, `test-todo-edit-description-input`, `test-todo-edit-priority-select`, `test-todo-edit-due-date-input`, `test-todo-save-button`, `test-todo-cancel-button`, `test-todo-expand-toggle`, `test-todo-collapsible-section`, `test-todo-overdue-indicator`.
 
-### Task 1B: Profile Card (8 IDs)
-The engine validates the personal identity components:
-- `test-profile-card`: The main card container.
-- `test-user-name`: The intern's display name.
-- `test-user-bio`: The professional biography.
-- `test-user-time`: Current UTC time display.
-- `test-user-avatar`: Profile image element.
-- `test-user-social-links`: Container for social media handles.
-- `test-user-hobbies`: List of interests.
-- `test-user-dislikes`: List of dislikes.
+**Technical Audit:** Verifies `aria-expanded`/`aria-controls` for accessibility and `aria-live="polite"` for dynamic time updates.
+
+### Task 1B: Profile Card (8 IDs + Technical Audit)
+The engine validates the personal identity components and performs a technical audit:
+- `test-profile-card`, `test-user-name`, `test-user-bio`, `test-user-time`, `test-user-avatar`, `test-user-social-links`, `test-user-hobbies`, `test-user-dislikes`.
+- **Technical Audit:** Verifies semantic `<article>`, `<header>`, `<figure>`, and `<ul>/<li>` tags; requires meaningful `<img>` alt text; ensures `target="_blank"` on social links; and validates epoch milliseconds.
 
 ### Calculation
-- **Score**: `(Unique IDs found / Total required IDs) * 10`
+- **Weighted Scoring**: Live site verification is weighted at **70%**, and source code analysis at **30%**.
 - **Average Score**: `(Task 1A Score + Task 1B Score) / 2`
-- **Pass Threshold**: Interns require an **Average Score of 7.0 or higher** to pass.
+- **Pass Threshold**: Interns require an **Average Score of 7.0 or higher** AND a minimum of **4.0 on each individual task** to pass.
 
 ## 🚀 Getting Started
 

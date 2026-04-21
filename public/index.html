@@ -138,32 +138,32 @@
         <h3>2. Task Breakdown</h3>
         <div class="info-grid">
           <div class="info-card">
-            <h4>Task 1A: Todo App (12 IDs)</h4>
-            <p>Focuses on state management and CRUD interactivity. We check for form structures, input bindings, priority indicators, and overdue logic.</p>
+            <h4>Task 1A: Todo App (21 IDs)</h4>
+            <p>Verified against the 21-point checklist. Includes audits for <strong>ARIA accessibility</strong> (expanded/controls) and <strong>Live Time</strong> updates.</p>
           </div>
           <div class="info-card">
             <h4>Task 1B: Profile Card (8 IDs)</h4>
-            <p>Focuses on UI components and dynamic data rendering. We verify user identity elements, UTC time displays, and social link structures.</p>
+            <p>Focuses on personal identity. Audits for <strong>Semantic tags</strong> (article/header/nav/list), <strong>Alt text</strong>, and <strong>Social link</strong> security.</p>
           </div>
         </div>
 
         <h3>3. Dual-Channel Verification</h3>
-        <p>To ensure academic integrity, we verify identifiers through two channels:</p>
+        <p>To ensure academic integrity, we verify identifiers through two channels with weighted scoring: <strong>Live Scan (70%)</strong> and <strong>Repo Audit (30%)</strong>.</p>
         <ul>
           <li><strong>Live Scan:</strong> Our engine parses the rendered HTML on the deployed URL to ensure attributes exist in the final build.</li>
-          <li><strong>Repo Audit:</strong> We recursively scan the GitHub repository's tree (HTML, JSX, TSX, JS, CSS) to verify the source code contains the required tags.</li>
+          <li><strong>Repo Audit:</strong> We recursively scan the GitHub repository's tree to verify the source code contains the required tags.</li>
         </ul>
 
         <h3>4. Integrity & Anti-Cheat</h3>
-        <p>To maintain high standards, we enforce strict accessibility rules:</p>
+        <p>To maintain high standards, we enforce strict compliance rules:</p>
         <ul>
           <li><strong>Broken Links:</strong> Any live URL that does not return a <code>200 OK</code> status is automatically flagged as a <strong>FAIL</strong>.</li>
-          <li><strong>Inaccessible Repos:</strong> Private repositories or 404 links that prevent source code audit are flagged as <strong>FAIL</strong>.</li>
-          <li><strong>Requirement:</strong> Valid links are a prerequisite for scoring. An intern cannot pass if their work cannot be audited by the engine.</li>
+          <li><strong>Audit Failures:</strong> Missing semantic tags or invalid time logic in Task 1B will trigger an automatic reduction in score.</li>
+          <li><strong>Requirement:</strong> Publicly accessible links are a prerequisite for scoring.</li>
         </ul>
 
         <h3>5. Pass Criteria</h3>
-        <p>The final result is based on the <strong>Average Score</strong> of both tasks. An average of <strong>7.0 or higher</strong> is required for a <strong>PASS</strong> status. Anything below triggers a <strong>REVIEW</strong> status, requiring manual intervention or improvement by the intern.</p>
+        <p>The final result is based on the <strong>Average Score</strong>. A score of <strong>7.0 or higher</strong> AND a <strong>minimum of 4.0 on each individual task</strong> is required for a <strong>PASS</strong> status.</p>
       </section>
     </div>
 
